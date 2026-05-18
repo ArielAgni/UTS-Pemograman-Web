@@ -1,0 +1,1562 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Manajemen Mahasiswa</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0
+        }
+
+        :root {
+            --bg-page: #0f172a;
+            --bg-card: #1e293b;
+            --bg-input: #0f172a;
+            --bg-hover: #334155;
+            --border: #334155;
+            --border-focus: #6366f1;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --accent: #6366f1;
+            --accent-hover: #4f46e5;
+            --stat-bg: #1e293b;
+            --table-row: #0f172a;
+            --table-hover: #1e293b;
+            --shadow: rgba(0, 0, 0, 0.4);
+        }
+
+        .light-mode {
+            --bg-page: #f8fafc;
+            --bg-card: #ffffff;
+            --bg-input: #f1f5f9;
+            --bg-hover: #e2e8f0;
+            --border: #cbd5e1;
+            --border-focus: #6366f1;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-muted: #94a3b8;
+            --accent: #6366f1;
+            --accent-hover: #4f46e5;
+            --stat-bg: #f1f5f9;
+            --table-row: #ffffff;
+            --table-hover: #f8fafc;
+            --shadow: rgba(0, 0, 0, 0.08);
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            background: var(--bg-page);
+            min-height: 100vh;
+            padding: 24px 16px;
+            transition: background 0.3s, color 0.3s
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1100px;
+            margin: 0 auto
+        }
+
+        .app-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            margin-bottom: 18px;
+            padding: 16px 20px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            transition: background 0.3s, border 0.3s
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 14px
+        }
+
+        .header-icon {
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0
+        }
+
+        .header-icon svg {
+            width: 22px;
+            height: 22px
+        }
+
+        .header-text h1 {
+            font-size: 17px;
+            font-weight: 600;
+            color: var(--text-primary)
+        }
+
+        .header-text p {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 2px
+        }
+
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px
+        }
+
+        .theme-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 14px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            transition: 0.2s;
+            white-space: nowrap
+        }
+
+        .theme-btn:hover {
+            border-color: var(--accent);
+            color: var(--text-primary)
+        }
+
+        .theme-btn svg {
+            width: 15px;
+            height: 15px;
+            flex-shrink: 0
+        }
+
+        .stat-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 16px
+        }
+
+        .stat-card {
+            background: var(--stat-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 14px 18px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            transition: 0.2s, background 0.3s
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--accent)
+        }
+
+        .stat-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0
+        }
+
+        .stat-icon.total {
+            background: rgba(99, 102, 241, 0.15)
+        }
+
+        .stat-icon.male {
+            background: rgba(59, 130, 246, 0.15)
+        }
+
+        .stat-icon.female {
+            background: rgba(236, 72, 153, 0.15)
+        }
+
+        .stat-icon svg {
+            width: 21px;
+            height: 21px
+        }
+
+        .stat-card .val {
+            font-size: 26px;
+            font-weight: 600;
+            color: var(--text-primary);
+            line-height: 1
+        }
+
+        .stat-card .key {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 4px
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            padding: 22px;
+            border-radius: 16px;
+            transition: background 0.3s, border 0.3s
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 18px
+        }
+
+        .icon-badge {
+            width: 32px;
+            height: 32px;
+            background: rgba(99, 102, 241, 0.15);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center
+        }
+
+        .icon-badge svg {
+            width: 16px;
+            height: 16px
+        }
+
+        .section-title h2 {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-primary)
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px
+        }
+
+        .full {
+            grid-column: span 2
+        }
+
+        .input-wrap {
+            position: relative
+        }
+
+        .input-wrap .input-icon {
+            position: absolute;
+            left: 11px;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+            display: flex;
+            align-items: center
+        }
+
+        .input-wrap .input-icon svg {
+            width: 15px;
+            height: 15px;
+            opacity: 0.45
+        }
+
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 10px 14px 10px 34px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--bg-input);
+            color: var(--text-primary);
+            outline: none;
+            font-family: inherit;
+            font-size: 13px;
+            transition: 0.3s
+        }
+
+        input[type="text"]:focus,
+        textarea:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15)
+        }
+
+        input::placeholder,
+        textarea::placeholder {
+            color: var(--text-muted)
+        }
+
+        .textarea-wrap {
+            grid-column: span 2;
+            position: relative
+        }
+
+        .textarea-wrap .input-icon {
+            position: absolute;
+            top: 22px;
+            left: 18px;
+            transform: none;
+            z-index: 2
+        }
+
+        .textarea-wrap .input-icon svg {
+            width: 22px;
+            height: 22px;
+            opacity: 0.5
+        }
+
+        .textarea-wrap textarea {
+            width: 100%;
+            height: 100px;
+            resize: none;
+            border-radius: 12px;
+            padding: 16px 16px 16px 52px;
+            font-size: 14px;
+            font-family: inherit;
+            outline: none
+        }
+
+        .ttl {
+            display: flex;
+            gap: 6px
+        }
+
+        .custom-select {
+            position: relative;
+            width: 100%
+        }
+
+        .cs-selected {
+            padding: 10px 12px 10px 34px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            cursor: pointer;
+            user-select: none;
+            color: var(--text-secondary);
+            font-size: 13px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: 0.3s;
+            position: relative;
+            font-family: inherit
+        }
+
+        .cs-selected .sel-icon {
+            position: absolute;
+            left: 11px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            align-items: center;
+            pointer-events: none
+        }
+
+        .cs-selected .sel-icon svg {
+            width: 15px;
+            height: 15px;
+            opacity: 0.45
+        }
+
+        .cs-selected:hover {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15)
+        }
+
+        .cs-selected::after {
+            content: '▾';
+            font-size: 12px;
+            color: var(--text-muted);
+            transition: transform 0.2s
+        }
+
+        .custom-select.open .cs-selected::after {
+            transform: rotate(180deg)
+        }
+
+        .custom-select.open .cs-selected {
+            border-color: var(--accent)
+        }
+
+        .cs-options {
+            display: none;
+            position: absolute;
+            top: 105%;
+            left: 0;
+            right: 0;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            max-height: 180px;
+            overflow-y: auto;
+            z-index: 9999;
+            box-shadow: 0 8px 24px var(--shadow)
+        }
+
+        .cs-options div {
+            padding: 9px 12px;
+            cursor: pointer;
+            color: var(--text-secondary);
+            font-size: 13px;
+            transition: 0.15s;
+            font-family: inherit
+        }
+
+        .cs-options div:hover {
+            background: var(--accent);
+            color: white
+        }
+
+        .custom-select.open .cs-options {
+            display: block
+        }
+
+        .cs-selected.no-icon {
+            padding-left: 12px
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 12px
+        }
+
+        button {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-family: inherit;
+            font-size: 13px;
+            transition: 0.2s
+        }
+
+        button svg {
+            width: 15px;
+            height: 15px;
+            flex-shrink: 0
+        }
+
+        .submit {
+            background: var(--accent);
+            color: white
+        }
+
+        .submit:hover {
+            background: var(--accent-hover);
+            transform: scale(1.03)
+        }
+
+        .reset {
+            background: var(--bg-input);
+            color: var(--text-secondary);
+            border: 1px solid var(--border)
+        }
+
+        .reset:hover {
+            transform: scale(1.03)
+        }
+
+        .filter-row {
+            display: flex;
+            gap: 8px;
+            margin-top: 14px;
+            flex-wrap: wrap
+        }
+
+        .filter-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 7px 14px;
+            border-radius: 20px;
+            border: 1.5px solid var(--border);
+            background: var(--bg-input);
+            color: var(--text-secondary);
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.2s;
+            font-family: inherit
+        }
+
+        .filter-btn svg {
+            width: 13px;
+            height: 13px;
+            flex-shrink: 0
+        }
+
+        .filter-btn:hover {
+            border-color: var(--accent);
+            color: var(--text-primary)
+        }
+
+        .filter-btn.active-all {
+            background: rgba(99, 102, 241, 0.15);
+            border-color: #6366f1;
+            color: #818cf8
+        }
+
+        .filter-btn.active-male {
+            background: rgba(59, 130, 246, 0.15);
+            border-color: #3b82f6;
+            color: #60a5fa
+        }
+
+        .filter-btn.active-female {
+            background: rgba(236, 72, 153, 0.15);
+            border-color: #ec4899;
+            color: #f472b6
+        }
+
+        .search-wrap {
+            margin-top: 10px;
+            position: relative
+        }
+
+        .search-wrap .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+            display: flex;
+            align-items: center
+        }
+
+        .search-wrap .search-icon svg {
+            width: 15px;
+            height: 15px;
+            opacity: 0.4
+        }
+
+        .search {
+            padding: 10px 14px 10px 36px;
+            width: 100%;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            outline: none;
+            background: var(--bg-input);
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 13px;
+            transition: 0.3s
+        }
+
+        .search::placeholder {
+            color: var(--text-muted)
+        }
+
+        .search:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15)
+        }
+
+        h3.table-title {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin: 18px 0 6px;
+            color: var(--accent);
+            font-size: 11px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.06em
+        }
+
+        h3.table-title svg {
+            width: 13px;
+            height: 13px
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            color: var(--text-primary);
+            background: var(--table-row);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--border)
+        }
+
+        th {
+            background: var(--accent);
+            color: white;
+            padding: 11px 10px;
+            text-align: center;
+            font-size: 11px;
+            font-weight: 500;
+            letter-spacing: 0.04em
+        }
+
+        .th-inner {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px
+        }
+
+        .th-inner svg {
+            width: 13px;
+            height: 13px;
+            opacity: 0.85
+        }
+
+        td {
+            padding: 10px;
+            text-align: center;
+            vertical-align: middle;
+            background-color: var(--table-row);
+            color: var(--text-secondary);
+            font-size: 12px;
+            border-bottom: 1px solid var(--border);
+            word-wrap: break-word;
+            transition: background 0.2s
+        }
+
+        tr:last-child td {
+            border-bottom: none
+        }
+
+        tr:hover td {
+            background: var(--table-hover);
+            color: var(--text-primary)
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 9px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 500
+        }
+
+        .badge svg {
+            width: 11px;
+            height: 11px
+        }
+
+        .badge.male {
+            background: rgba(59, 130, 246, 0.15);
+            color: #60a5fa
+        }
+
+        .badge.female {
+            background: rgba(236, 72, 153, 0.15);
+            color: #f472b6
+        }
+
+        .btn-actions {
+            display: flex;
+            gap: 6px;
+            justify-content: center
+        }
+
+        .btn-hapus,
+        .btn-edit {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 11px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: bold;
+            transition: 0.2s;
+            border: 1px solid
+        }
+
+        .btn-hapus {
+            background: #7f1d1d;
+            color: #fca5a5;
+            border-color: #991b1b
+        }
+
+        .btn-hapus:hover {
+            background: #ef4444;
+            color: white;
+            transform: scale(1.05)
+        }
+
+        .btn-edit {
+            background: #1c3a1f;
+            color: #86efac;
+            border-color: #166534
+        }
+
+        .btn-edit:hover {
+            background: #16a34a;
+            color: white;
+            transform: scale(1.05)
+        }
+
+        .btn-hapus svg,
+        .btn-edit svg {
+            width: 12px;
+            height: 12px
+        }
+
+        .notif {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #22c55e;
+            color: white;
+            padding: 12px 18px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: 0.3s;
+            z-index: 99999
+        }
+
+        .notif svg {
+            width: 16px;
+            height: 16px;
+            flex-shrink: 0
+        }
+
+        .notif.show {
+            opacity: 1;
+            transform: translateY(0)
+        }
+
+        .notif.error {
+            background: #ef4444
+        }
+
+        .notif.warning {
+            background: #f59e0b
+        }
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9998;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: all
+        }
+
+        .modal {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 26px;
+            width: 540px;
+            max-width: 95vw;
+            transform: scale(0.93) translateY(20px);
+            transition: transform 0.25s, background 0.3s
+        }
+
+        .modal-overlay.active .modal {
+            transform: scale(1) translateY(0)
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 18px
+        }
+
+        .modal-header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px
+        }
+
+        .modal-header-icon {
+            width: 36px;
+            height: 36px;
+            background: rgba(99, 102, 241, 0.15);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center
+        }
+
+        .modal-header-icon svg {
+            width: 17px;
+            height: 17px
+        }
+
+        .modal-header h3 {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary)
+        }
+
+        .modal-header p {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 2px
+        }
+
+        .btn-close-modal {
+            background: transparent;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 6px 8px;
+            cursor: pointer;
+            color: var(--text-muted);
+            transition: 0.2s;
+            display: flex;
+            align-items: center
+        }
+
+        .btn-close-modal:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary)
+        }
+
+        .btn-close-modal svg {
+            width: 15px;
+            height: 15px
+        }
+
+        .modal .grid {
+            grid-template-columns: 1fr 1fr
+        }
+
+        .nim-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: rgba(99, 102, 241, 0.12);
+            color: #818cf8;
+            border: 1px solid rgba(99, 102, 241, 0.25);
+            border-radius: 6px;
+            padding: 3px 10px;
+            font-size: 12px;
+            font-weight: 500;
+            margin-bottom: 12px
+        }
+
+        .nim-badge svg {
+            width: 12px;
+            height: 12px
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 16px
+        }
+
+        .btn-update {
+            background: #16a34a;
+            color: white
+        }
+
+        .btn-update:hover {
+            background: #15803d;
+            transform: scale(1.03)
+        }
+
+        .btn-cancel-edit {
+            background: var(--bg-input);
+            color: var(--text-secondary);
+            border: 1px solid var(--border)
+        }
+
+        .light-mode .btn-hapus {
+            background: #fee2e2;
+            color: #991b1b;
+            border-color: #fca5a5
+        }
+
+        .light-mode .btn-hapus:hover {
+            background: #ef4444;
+            color: white
+        }
+
+        .light-mode .btn-edit {
+            background: #dcfce7;
+            color: #166534;
+            border-color: #86efac
+        }
+
+        .light-mode .btn-edit:hover {
+            background: #16a34a;
+            color: white
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="notif" class="notif">
+        <svg id="notif-icon" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+        </svg>
+        <span id="notif-text"></span>
+    </div>
+
+    <!-- MODAL EDIT -->
+    <div class="modal-overlay" id="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-header-left">
+                    <div class="modal-header-icon">
+                        <svg fill="none" stroke="#6366f1" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h3>Edit Data Mahasiswa</h3>
+                        <p>Perbarui informasi mahasiswa di bawah ini</p>
+                    </div>
+                </div>
+                <button class="btn-close-modal" id="btn-close-modal">
+                    <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <div class="nim-badge" id="edit-nim-label">
+                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <rect x="3" y="4" width="18" height="16" rx="2" />
+                    <line x1="7" y1="9" x2="17" y2="9" stroke-linecap="round" />
+                    <line x1="7" y1="13" x2="13" y2="13" stroke-linecap="round" />
+                </svg>
+                <span>NIM: —</span>
+            </div>
+            <div class="grid">
+                <div class="input-wrap">
+                    <span class="input-icon">
+                        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
+                            <circle cx="12" cy="7" r="4" />
+                        </svg>
+                    </span>
+                    <input type="text" id="edit-nama" placeholder="Nama Lengkap">
+                </div>
+                <div class="input-wrap">
+                    <span class="input-icon">
+                        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <rect x="3" y="4" width="18" height="16" rx="2" />
+                            <line x1="7" y1="9" x2="17" y2="9" stroke-linecap="round" />
+                            <line x1="7" y1="13" x2="13" y2="13" stroke-linecap="round" />
+                        </svg>
+                    </span>
+                    <input type="text" id="edit-nim-display" placeholder="NIM">
+                </div>
+                <input type="hidden" id="edit-nim-original">
+                <div class="textarea-wrap">
+                    <span class="input-icon">
+                        <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                    </span>
+                    <textarea id="edit-alamat" placeholder="Alamat"></textarea>
+                </div>
+                <div class="custom-select" id="edit-jk-wrap">
+                    <div class="cs-selected" id="edit-jk-display">
+                        <span class="sel-icon">
+                            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <circle cx="11" cy="9" r="6" />
+                                <circle cx="17" cy="14" r="5" />
+                            </svg>
+                        </span>
+                        <span class="jk-label">-- Pilih Jenis Kelamin --</span>
+                    </div>
+                    <div class="cs-options" id="edit-jk-opts"></div>
+                    <input type="hidden" id="edit-jk">
+                </div>
+                <div class="ttl">
+                    <div class="custom-select" id="edit-tgl-wrap" style="flex:1">
+                        <div class="cs-selected no-icon" id="edit-tgl-display"><span class="cs-label">Tgl</span></div>
+                        <div class="cs-options" id="edit-tgl-opts"></div>
+                        <input type="hidden" id="edit-tgl">
+                    </div>
+                    <div class="custom-select" id="edit-bln-wrap" style="flex:1.4">
+                        <div class="cs-selected no-icon" id="edit-bln-display"><span class="cs-label">Bulan</span></div>
+                        <div class="cs-options" id="edit-bln-opts"></div>
+                        <input type="hidden" id="edit-bln">
+                    </div>
+                    <div class="custom-select" id="edit-thn-wrap" style="flex:1.2">
+                        <div class="cs-selected no-icon" id="edit-thn-display"><span class="cs-label">Tahun</span></div>
+                        <div class="cs-options" id="edit-thn-opts"></div>
+                        <input type="hidden" id="edit-thn">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="submit btn-update" id="btn-update">
+                    <svg fill="none" stroke="white" stroke-width="2.2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
+                    Simpan Perubahan
+                </button>
+                <button class="reset btn-cancel-edit" id="btn-cancel-edit">
+                    <svg fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                    Batal
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- HEADER -->
+        <div class="app-header">
+            <div class="header-left">
+                <div class="header-icon">
+                    <svg fill="none" stroke="white" stroke-width="1.8" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 3L2 9l10 6 10-6-10-6z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 11.5V17c0 0 2 2 6 2s6-2 6-2v-5.5" />
+                        <line x1="22" y1="9" x2="22" y2="14" stroke-linecap="round" />
+                    </svg>
+                </div>
+                <div class="header-text">
+                    <h1>Manajemen Mahasiswa</h1>
+                    <p>Sistem pendataan mahasiswa — tambah, cari, dan kelola data</p>
+                </div>
+            </div>
+            <div class="header-controls">
+                <button class="theme-btn" id="theme-toggle" onclick="toggleTheme()">
+                    <svg id="theme-icon-moon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />
+                    </svg>
+                    <svg id="theme-icon-sun" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"
+                        style="display:none">
+                        <circle cx="12" cy="12" r="5" />
+                        <line x1="12" y1="1" x2="12" y2="3" stroke-linecap="round" />
+                        <line x1="12" y1="21" x2="12" y2="23" stroke-linecap="round" />
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" stroke-linecap="round" />
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" stroke-linecap="round" />
+                        <line x1="1" y1="12" x2="3" y2="12" stroke-linecap="round" />
+                        <line x1="21" y1="12" x2="23" y2="12" stroke-linecap="round" />
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" stroke-linecap="round" />
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" stroke-linecap="round" />
+                    </svg>
+                    <span id="theme-label">Light Mode</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- STAT CARDS -->
+        <div class="stat-row">
+            <div class="stat-card">
+                <div class="stat-icon total">
+                    <svg fill="none" stroke="#6366f1" stroke-width="1.8" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
+                        <circle cx="9" cy="7" r="4" />
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" />
+                    </svg>
+                </div>
+                <div>
+                    <div class="val" id="stat-total">0</div>
+                    <div class="key">Total Mahasiswa</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon male">
+                    <svg fill="none" stroke="#3b82f6" stroke-width="1.8" viewBox="0 0 24 24">
+                        <circle cx="10" cy="12" r="6" />
+                        <line x1="14.5" y1="7.5" x2="21" y2="3" stroke-linecap="round" />
+                        <polyline points="16,3 21,3 21,8" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </div>
+                <div>
+                    <div class="val" id="stat-laki">0</div>
+                    <div class="key">Laki-laki (Pria)</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon female">
+                    <svg fill="none" stroke="#ec4899" stroke-width="1.8" viewBox="0 0 24 24">
+                        <circle cx="12" cy="8" r="6" />
+                        <line x1="12" y1="14" x2="12" y2="22" stroke-linecap="round" />
+                        <line x1="9" y1="19" x2="15" y2="19" stroke-linecap="round" />
+                    </svg>
+                </div>
+                <div>
+                    <div class="val" id="stat-perempuan">0</div>
+                    <div class="key">Perempuan (Wanita)</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="section-title">
+                <div class="icon-badge">
+                    <svg fill="none" stroke="#6366f1" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                    </svg>
+                </div>
+                <h2>Tambah Data Mahasiswa</h2>
+            </div>
+
+            <div class="grid">
+                <!-- Nama -->
+                <div class="input-wrap">
+                    <span class="input-icon">
+                        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
+                            <circle cx="12" cy="7" r="4" />
+                        </svg>
+                    </span>
+                    <input type="text" id="nama" placeholder="Nama Lengkap">
+                </div>
+                <!-- NIM -->
+                <div class="input-wrap">
+                    <span class="input-icon">
+                        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <rect x="3" y="4" width="18" height="16" rx="2" />
+                            <line x1="7" y1="9" x2="17" y2="9" stroke-linecap="round" />
+                            <line x1="7" y1="13" x2="13" y2="13" stroke-linecap="round" />
+                        </svg>
+                    </span>
+                    <input type="text" id="nim" placeholder="NIM">
+                </div>
+                <!-- Alamat -->
+                <div class="textarea-wrap">
+                    <span class="input-icon">
+                        <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                    </span>
+                    <textarea id="alamat" placeholder="Alamat"></textarea>
+                </div>
+                <!-- Jenis Kelamin -->
+                <div class="custom-select" id="jk-wrap">
+                    <div class="cs-selected" id="jk-display">
+                        <span class="sel-icon">
+                            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <circle cx="11" cy="9" r="6" />
+                                <circle cx="17" cy="14" r="5" />
+                            </svg>
+                        </span>
+                        <span class="jk-label">-- Pilih Jenis Kelamin --</span>
+                    </div>
+                    <div class="cs-options" id="jk-opts"></div>
+                    <input type="hidden" id="jk">
+                </div>
+                <!-- TTL -->
+                <div class="ttl">
+                    <div class="custom-select" id="tgl-wrap" style="flex:1">
+                        <div class="cs-selected no-icon" id="tgl-display"><span class="cs-label">Tgl</span></div>
+                        <div class="cs-options" id="tgl-opts"></div>
+                        <input type="hidden" id="tgl">
+                    </div>
+                    <div class="custom-select" id="bln-wrap" style="flex:1.4">
+                        <div class="cs-selected no-icon" id="bln-display"><span class="cs-label">Bulan</span></div>
+                        <div class="cs-options" id="bln-opts"></div>
+                        <input type="hidden" id="bln">
+                    </div>
+                    <div class="custom-select" id="thn-wrap" style="flex:1.2">
+                        <div class="cs-selected no-icon" id="thn-display"><span class="cs-label">Tahun</span></div>
+                        <div class="cs-options" id="thn-opts"></div>
+                        <input type="hidden" id="thn">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button class="submit" id="btn-simpan">
+                    <svg fill="none" stroke="white" stroke-width="2.2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1-4l-3 3m0 0l-3-3m3 3V1" />
+                    </svg>
+                    Simpan Data
+                </button>
+                <button class="reset" id="btn-reset">
+                    <svg fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h5M20 20v-5h-5" />
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M4 9a9 9 0 0114.94-3.36M20 15A9 9 0 015.06 18.36" />
+                    </svg>
+                    Reset
+                </button>
+            </div>
+
+            <!-- FILTER JENIS KELAMIN -->
+            <div class="filter-row">
+                <button class="filter-btn active-all" id="filter-all" onclick="setFilter('all')">
+                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
+                        <circle cx="9" cy="7" r="4" />
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" />
+                    </svg>
+                    Semua
+                </button>
+                <button class="filter-btn" id="filter-pria" onclick="setFilter('pria')">
+                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <circle cx="10" cy="12" r="6" />
+                        <line x1="14.5" y1="7.5" x2="21" y2="3" stroke-linecap="round" />
+                        <polyline points="16,3 21,3 21,8" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                    Pria
+                </button>
+                <button class="filter-btn" id="filter-wanita" onclick="setFilter('wanita')">
+                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <circle cx="12" cy="8" r="6" />
+                        <line x1="12" y1="14" x2="12" y2="22" stroke-linecap="round" />
+                        <line x1="9" y1="19" x2="15" y2="19" stroke-linecap="round" />
+                    </svg>
+                    Wanita
+                </button>
+            </div>
+
+            <!-- SEARCH -->
+            <div class="search-wrap">
+                <span class="search-icon">
+                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <circle cx="11" cy="11" r="8" />
+                        <line x1="21" y1="21" x2="16.65" y2="16.65" stroke-linecap="round" />
+                    </svg>
+                </span>
+                <input type="text" class="search" id="search" placeholder="Cari berdasarkan NIM atau Nama...">
+            </div>
+
+            <h3 class="table-title">
+                <svg fill="none" stroke="#6366f1" stroke-width="2" viewBox="0 0 24 24">
+                    <rect x="3" y="3" width="18" height="18" rx="2" />
+                    <line x1="3" y1="9" x2="21" y2="9" />
+                    <line x1="3" y1="15" x2="21" y2="15" />
+                    <line x1="9" y1="9" x2="9" y2="21" />
+                </svg>
+                Data Mahasiswa
+            </h3>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width:44px">
+                            <div class="th-inner">
+                                <svg fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" d="M4 6h16M4 12h8M4 18h12" />
+                                </svg>
+                                No
+                            </div>
+                        </th>
+                        <th>
+                            <div class="th-inner">
+                                <svg fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24">
+                                    <rect x="3" y="4" width="18" height="16" rx="2" />
+                                    <line x1="7" y1="9" x2="17" y2="9" stroke-linecap="round" />
+                                    <line x1="7" y1="13" x2="13" y2="13" stroke-linecap="round" />
+                                </svg>
+                                NIM
+                            </div>
+                        </th>
+                        <th>
+                            <div class="th-inner">
+                                <svg fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
+                                    <circle cx="12" cy="7" r="4" />
+                                </svg>
+                                Nama
+                            </div>
+                        </th>
+                        <th>
+                            <div class="th-inner">
+                                <svg fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round"
+                                        d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                    <circle cx="12" cy="11" r="3" />
+                                </svg>
+                                Alamat
+                            </div>
+                        </th>
+                        <th style="width:100px">
+                            <div class="th-inner">
+                                <svg fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24">
+                                    <circle cx="11" cy="9" r="5" />
+                                    <circle cx="17" cy="14" r="5" />
+                                </svg>
+                                J. Kelamin
+                            </div>
+                        </th>
+                        <th>
+                            <div class="th-inner">
+                                <svg fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" />
+                                    <line x1="16" y1="2" x2="16" y2="6" stroke-linecap="round" />
+                                    <line x1="8" y1="2" x2="8" y2="6" stroke-linecap="round" />
+                                    <line x1="3" y1="10" x2="21" y2="10" />
+                                </svg>
+                                Tempat Tgl Lahir
+                            </div>
+                        </th>
+                        <th style="width:110px">
+                            <div class="th-inner">
+                                <svg fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24">
+                                    <circle cx="12" cy="12" r="3" />
+                                    <path stroke-linecap="round"
+                                        d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z" />
+                                </svg>
+                                Opsi
+                            </div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody id="tbody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        let dataMahasiswa = JSON.parse(localStorage.getItem("mahasiswa")) || [];
+        let activeFilter = 'all';
+        let searchQuery = '';
+        let isLight = false;
+
+        function toggleTheme() {
+            isLight = !isLight;
+            document.body.classList.toggle('light-mode', isLight);
+            document.getElementById('theme-icon-moon').style.display = isLight ? 'none' : 'block';
+            document.getElementById('theme-icon-sun').style.display = isLight ? 'block' : 'none';
+            document.getElementById('theme-label').textContent = isLight ? 'Dark Mode' : 'Light Mode';
+        }
+
+        function setFilter(f) {
+            activeFilter = f;
+            ['all', 'pria', 'wanita'].forEach(k => {
+                const btn = document.getElementById('filter-' + k);
+                btn.className = 'filter-btn';
+                if (k === f) btn.classList.add(k === 'all' ? 'active-all' : k === 'pria' ? 'active-male' : 'active-female');
+            });
+            renderTable();
+        }
+
+        function updateStats() {
+            document.getElementById('stat-total').textContent = dataMahasiswa.length;
+            document.getElementById('stat-laki').textContent = dataMahasiswa.filter(m => m.jk === 'Pria').length;
+            document.getElementById('stat-perempuan').textContent = dataMahasiswa.filter(m => m.jk === 'Wanita').length;
+        }
+
+        function makeSelect(wrapId, dispId, optsId, hidId, items, defaultLabel) {
+            const wrap = document.getElementById(wrapId);
+            const disp = document.getElementById(dispId);
+            const opts = document.getElementById(optsId);
+            const hid = document.getElementById(hidId);
+            items.forEach(val => {
+                const d = document.createElement('div');
+                d.textContent = val;
+                d.onclick = e => {
+                    e.stopPropagation();
+                    const labelEl = disp.querySelector('.jk-label') || disp.querySelector('.cs-label');
+                    if (labelEl) labelEl.textContent = val;
+                    hid.value = (val === defaultLabel || val === '-- Pilih Jenis Kelamin --') ? '' : val;
+                    wrap.classList.remove('open');
+                };
+                opts.appendChild(d);
+            });
+            disp.onclick = e => {
+                e.stopPropagation();
+                document.querySelectorAll('.custom-select').forEach(s => { if (s !== wrap) s.classList.remove('open'); });
+                wrap.classList.toggle('open');
+            };
+        }
+
+        document.addEventListener('click', () => {
+            document.querySelectorAll('.custom-select').forEach(s => s.classList.remove('open'));
+        });
+
+        const bulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+        const tahunList = []; for (let y = 1995; y <= 2010; y++) tahunList.push(String(y));
+        const tglList = []; for (let i = 1; i <= 31; i++) tglList.push(String(i));
+
+        makeSelect('jk-wrap', 'jk-display', 'jk-opts', 'jk', ['-- Pilih Jenis Kelamin --', 'Pria', 'Wanita'], '');
+        makeSelect('tgl-wrap', 'tgl-display', 'tgl-opts', 'tgl', ['Tgl', ...tglList], 'Tgl');
+        makeSelect('bln-wrap', 'bln-display', 'bln-opts', 'bln', ['Bulan', ...bulan], 'Bulan');
+        makeSelect('thn-wrap', 'thn-display', 'thn-opts', 'thn', ['Tahun', ...tahunList], 'Tahun');
+        makeSelect('edit-jk-wrap', 'edit-jk-display', 'edit-jk-opts', 'edit-jk', ['-- Pilih Jenis Kelamin --', 'Pria', 'Wanita'], '');
+        makeSelect('edit-tgl-wrap', 'edit-tgl-display', 'edit-tgl-opts', 'edit-tgl', ['Tgl', ...tglList], 'Tgl');
+        makeSelect('edit-bln-wrap', 'edit-bln-display', 'edit-bln-opts', 'edit-bln', ['Bulan', ...bulan], 'Bulan');
+        makeSelect('edit-thn-wrap', 'edit-thn-display', 'edit-thn-opts', 'edit-thn', ['Tahun', ...tahunList], 'Tahun');
+
+        function showNotif(pesan, tipe = "success") {
+            const notif = document.getElementById("notif");
+            const iconEl = document.getElementById("notif-icon");
+            document.getElementById("notif-text").textContent = pesan;
+            if (tipe === "error") iconEl.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>';
+            else if (tipe === "warning") iconEl.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>';
+            else iconEl.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>';
+            notif.className = "notif show" + (tipe === "error" ? " error" : tipe === "warning" ? " warning" : "");
+            setTimeout(() => { notif.className = "notif"; }, 2400);
+        }
+
+        function resetForm() {
+            ['nama', 'nim', 'alamat'].forEach(id => document.getElementById(id).value = '');
+            const jkL = document.querySelector('#jk-display .jk-label'); if (jkL) jkL.textContent = '-- Pilih Jenis Kelamin --';
+            const tL = document.querySelector('#tgl-display .cs-label'); if (tL) tL.textContent = 'Tgl';
+            const bL = document.querySelector('#bln-display .cs-label'); if (bL) bL.textContent = 'Bulan';
+            const thnL = document.querySelector('#thn-display .cs-label'); if (thnL) thnL.textContent = 'Tahun';
+            ['jk', 'tgl', 'bln', 'thn'].forEach(id => document.getElementById(id).value = '');
+        }
+
+        const maleIcon = `<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="width:11px;height:11px"><circle cx="10" cy="12" r="5"/><line x1="14" y1="8" x2="20" y2="3" stroke-linecap="round"/><polyline points="15.5,3 20,3 20,7.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+        const femaleIcon = `<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="width:11px;height:11px"><circle cx="12" cy="8" r="5"/><line x1="12" y1="13" x2="12" y2="20" stroke-linecap="round"/><line x1="9" y1="18" x2="15" y2="18" stroke-linecap="round"/></svg>`;
+        const trashIcon = `<svg fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6" stroke-linecap="round"/><path stroke-linecap="round" stroke-linejoin="round" d="M19 6l-1 14H6L5 6"/><path stroke-linecap="round" d="M10 11v6M14 11v6"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 6V4h6v2"/></svg>`;
+        const editIcon = `<svg fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>`;
+
+        function getFiltered() {
+            let list = dataMahasiswa;
+            if (activeFilter === 'pria') list = list.filter(m => m.jk === 'Pria');
+            else if (activeFilter === 'wanita') list = list.filter(m => m.jk === 'Wanita');
+            if (searchQuery) list = list.filter(m => m.nama.toLowerCase().includes(searchQuery) || m.nim.toLowerCase().includes(searchQuery));
+            return list;
+        }
+
+        function renderTable() {
+            const list = getFiltered();
+            const tbody = document.getElementById("tbody");
+            tbody.innerHTML = '';
+            if (list.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="color:var(--text-muted);padding:22px;font-size:13px;">📭 Belum ada data mahasiswa</td></tr>';
+                return;
+            }
+            list.forEach((mhs, i) => {
+                const isPria = mhs.jk === 'Pria';
+                const badge = `<span class="badge ${isPria ? 'male' : 'female'}">${isPria ? maleIcon : femaleIcon} ${mhs.jk}</span>`;
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+      <td>${i + 1}</td>
+      <td>${mhs.nim}</td>
+      <td>${mhs.nama}</td>
+      <td>${mhs.alamat}</td>
+      <td>${badge}</td>
+      <td>${mhs.ttl}</td>
+      <td>
+        <div class="btn-actions">
+          <button class="btn-edit" onclick="bukaEdit('${mhs.nim}')">${editIcon} Edit</button>
+          <button class="btn-hapus" onclick="hapusData('${mhs.nim}')">${trashIcon} Hapus</button>
+        </div>
+      </td>`;
+                tbody.appendChild(tr);
+            });
+        }
+
+        document.getElementById("btn-simpan").addEventListener("click", function () {
+            const nama = document.getElementById("nama").value.trim();
+            const nim = document.getElementById("nim").value.trim();
+            const alamat = document.getElementById("alamat").value.trim();
+            const jk = document.getElementById("jk").value;
+            const tgl = document.getElementById("tgl").value;
+            const bln = document.getElementById("bln").value;
+            const thn = document.getElementById("thn").value;
+            if (!nama || !nim) { showNotif("Nama & NIM wajib diisi!", "error"); return; }
+            if (dataMahasiswa.find(m => m.nim === nim)) { showNotif("NIM sudah terdaftar!", "error"); return; }
+            const ttl = `${tgl} ${bln} ${thn}`.trim();
+            dataMahasiswa.push({ nama, nim, alamat, jk, ttl });
+            localStorage.setItem("mahasiswa", JSON.stringify(dataMahasiswa));
+            showNotif("Data berhasil disimpan!");
+            renderTable(); updateStats(); resetForm();
+        });
+
+        document.getElementById("btn-reset").addEventListener("click", resetForm);
+
+        function hapusData(nim) {
+            dataMahasiswa = dataMahasiswa.filter(m => m.nim !== nim);
+            localStorage.setItem("mahasiswa", JSON.stringify(dataMahasiswa));
+            renderTable(); updateStats();
+            showNotif("Data berhasil dihapus!", "error");
+        }
+
+        function setSelectValue(wrapId, dispId, hidId, value, defaultLabel) {
+            const labelEl = document.querySelector(`#${dispId} .jk-label`) || document.querySelector(`#${dispId} .cs-label`);
+            if (labelEl) labelEl.textContent = value || defaultLabel;
+            document.getElementById(hidId).value = value || '';
+        }
+
+        function bukaEdit(nim) {
+            const mhs = dataMahasiswa.find(m => m.nim === nim); if (!mhs) return;
+            document.getElementById('edit-nim-original').value = mhs.nim;
+            document.getElementById('edit-nim-display').value = mhs.nim;
+            document.getElementById('edit-nama').value = mhs.nama;
+            document.getElementById('edit-alamat').value = mhs.alamat;
+            document.querySelector('#edit-nim-label span').textContent = 'NIM: ' + mhs.nim;
+            const p = (mhs.ttl || '').split(' ');
+            setSelectValue('edit-jk-wrap', 'edit-jk-display', 'edit-jk', mhs.jk, '-- Pilih Jenis Kelamin --');
+            setSelectValue('edit-tgl-wrap', 'edit-tgl-display', 'edit-tgl', p[0] || '', 'Tgl');
+            setSelectValue('edit-bln-wrap', 'edit-bln-display', 'edit-bln', p[1] || '', 'Bulan');
+            setSelectValue('edit-thn-wrap', 'edit-thn-display', 'edit-thn', p[2] || '', 'Tahun');
+            document.getElementById('modal-overlay').classList.add('active');
+        }
+
+        function tutupModal() { document.getElementById('modal-overlay').classList.remove('active'); }
+        document.getElementById('btn-close-modal').addEventListener('click', tutupModal);
+        document.getElementById('btn-cancel-edit').addEventListener('click', tutupModal);
+        document.getElementById('modal-overlay').addEventListener('click', function (e) { if (e.target === this) tutupModal(); });
+
+        document.getElementById('btn-update').addEventListener('click', function () {
+            const nimOri = document.getElementById('edit-nim-original').value;
+            const nimBaru = document.getElementById('edit-nim-display').value.trim();
+            const nama = document.getElementById('edit-nama').value.trim();
+            const alamat = document.getElementById('edit-alamat').value.trim();
+            const jk = document.getElementById('edit-jk').value;
+            const tgl = document.getElementById('edit-tgl').value;
+            const bln = document.getElementById('edit-bln').value;
+            const thn = document.getElementById('edit-thn').value;
+            if (!nama) { showNotif("Nama tidak boleh kosong!", "error"); return; }
+            if (!nimBaru) { showNotif("NIM tidak boleh kosong!", "error"); return; }
+            if (nimBaru !== nimOri && dataMahasiswa.find(m => m.nim === nimBaru)) {
+                showNotif("NIM baru sudah digunakan!", "error"); return;
+            }
+            const idx = dataMahasiswa.findIndex(m => m.nim === nimOri); if (idx === -1) return;
+            const ttl = `${tgl} ${bln} ${thn}`.trim();
+            dataMahasiswa[idx] = { ...dataMahasiswa[idx], nim: nimBaru, nama, alamat, jk, ttl };
+            localStorage.setItem("mahasiswa", JSON.stringify(dataMahasiswa));
+            tutupModal(); renderTable(); updateStats();
+            showNotif("Data berhasil diperbarui!", "warning");
+        });
+
+        document.getElementById("search").addEventListener("input", function () {
+            searchQuery = this.value.toLowerCase();
+            renderTable();
+        });
+
+        renderTable();
+        updateStats();
+    </script>
+</body>
+
+</html>
